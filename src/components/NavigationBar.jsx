@@ -4,6 +4,7 @@ import "../style/Navbar.css";
 import { useEffect, useState } from "react";
 
 function NavigationBar() {
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -15,10 +16,13 @@ function NavigationBar() {
     }
   }, []);
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    const query = event.target.elements.query.value;
-    navigate("/search", { state: { query } });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!search) return;
+
+    navigate(`/search?q=${search}`);
+    setSearch("");
   };
   return (
     <Navbar expand="lg" className="transparent fixed-top ">
@@ -37,12 +41,14 @@ function NavigationBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="w-100 d-flex justify-content-end">
             <div className="ml-auto">
-              <Form onSubmit={handleSearch}>
+              <Form onSubmit={handleSubmit}>
                 <input
                   type="search"
                   placeholder="Search ..."
                   name="query"
                   className="Navbar-search"
+                  onChange={(e) => setSearch(e.target.value)}
+                  value={search}
                 />
               </Form>
               <div>

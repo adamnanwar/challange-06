@@ -1,49 +1,23 @@
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import { useParams} from "react-router-dom";
+// import axios from "axios";
 import { Button, Carousel } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 import "../style/Detail.css";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import NavigationBar from "../components/NavigationBar";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import {getPostDetails } from '../redux/action/postActions';
 
-function DetailMovie() {
-  const [detailMovie, setDetailMovie] = useState({});
-  const params = useParams();
+function postDetail() {
+  const dispatch = useDispatch();
+  const { id } = useParams();
+  const { postDetail } = useSelector((state) => state.post);
+  
 
-  useEffect(() => {
-    const getDetailMovie = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/v1/movie/${params.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        // console.log(JSON.stringify(response.data.data));
-        const data = response.data.data;
-        setDetailMovie(data);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          // If not valid token
-          if (error.response.status === 401) {
-            localStorage.removeItem("token");
-            // Temporary solution
-            return (window.location.href = "/");
-          }
-
-          toast.error(error.response.data.message);
-          return;
-        }
-        toast.error(error.message);
-      }
-    };
-
-    getDetailMovie();
-  }, [params]);
+  useEffect(()=> {
+    dispatch(getPostDetails(id));
+  },[dispatch, id])
 
   return (
     <>
@@ -51,26 +25,26 @@ function DetailMovie() {
       <Carousel controls={false}>
         <Carousel.Item>
           <img
-            className="Carousel-img d-block w-100 "
-            src={`https://image.tmdb.org/t/p/original${detailMovie?.backdrop_path}`}
+            className="Carousel-img d-block w-100 img-fluid"
+            src={`https://image.tmdb.org/t/p/original${postDetail?.backdrop_path}`}
             alt="First slide"
           />
           <Carousel.Caption className="Movie-caption justify-content-center">
-            <h2 className="Movie-caption-title">{detailMovie?.title}</h2>
+            <h2 className="Movie-caption-title">{postDetail?.title}</h2>
             <p className="Movie-genres">
-              {detailMovie?.genres &&
-                detailMovie?.genres?.length > 0 &&
-                detailMovie?.genres?.map((genre, i) => {
-                  return i === detailMovie?.genres.length - 1
+              {postDetail?.genres &&
+                postDetail?.genres?.length > 0 &&
+                postDetail?.genres?.map((genre, i) => {
+                  return i === postDetail?.genres.length - 1
                     ? genre.name
                     : `${genre.name}, `;
                 })}
             </p>
-            <p className="Movie-caption-text">{detailMovie?.overview}</p>
+            <p className="Movie-caption-text">{postDetail?.overview}</p>
             <p className="Movie-rate">
               <StarFill className="Icon-star" />
-              {detailMovie?.vote_average
-                ? detailMovie.vote_average.toFixed(1)
+              {postDetail?.vote_average
+                ? postDetail?.vote_average.toFixed(1)
                 : "-"}
             </p>
             <Button className="Movie-caption-button" variant="danger">
@@ -83,4 +57,4 @@ function DetailMovie() {
   );
 }
 
-export default DetailMovie;
+export default postDetail;

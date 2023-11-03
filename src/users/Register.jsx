@@ -3,6 +3,8 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { register } from '../redux/action/authActions';
 
 function Register() {
   const [name, setName] = useState("");
@@ -10,36 +12,24 @@ function Register() {
   const [password, setPassword] = useState("");
   const [validation, setValidation] = useState({});
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const registerHandler = async (e) => {
     e.preventDefault();
 
     try {
       // Send data as JSON
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/v1/auth/register`,
-        {
-          name,
-          email,
-          password,
-        },
-        {
-          headers: {
-            "Content-type": "application/json",
-          },
-        }
-      );
+      const data = {
+        name,
+        email,
+        password,
+      };
 
-      // Check if registration was successful
-      if (response.status === 201) {
-        // Redirect to the login page
-        navigate("/", { replace: true });
-      }
+      dispatch(register(data, navigate));
+
     } catch (error) {
-      // Handle validation errors
-      if (error.response && error.response.data) {
-        setValidation(error.response.data);
-      }
+      // Handle the error here
+      console.error(error);
     }
   };
 

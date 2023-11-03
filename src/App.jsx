@@ -7,10 +7,13 @@ import Search from "./pages/Search";
 import DetailMovie from "./pages/DetailMovie";
 import Login from "./users/Login";
 import Register from "./users/Register";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
   return (
+    <Provider store={store}>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH}>
     <BrowserRouter>
       <Routes>
@@ -55,6 +58,7 @@ function App() {
       <ToastContainer theme="colored" />
     </BrowserRouter>
     </GoogleOAuthProvider>
+    </Provider>
   );
 }
 
